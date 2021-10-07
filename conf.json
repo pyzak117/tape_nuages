@@ -1,0 +1,9 @@
+{
+"TOPLEFT":[432223, 4841822],
+"BOTRIGHT":[474960.3, 4811218.5],
+"SEUIL_ZONE":20,
+"PATH":"C:/Users/22104926/Desktop/M2_TELENVI/INFORMATIQUE_IMAGE/projet_nuages/images_test/serie_temporelle",
+"RESULT_FILE":"C:/Users/22104926/Desktop/results.txt",
+"T1":0.1,
+"t2":0.1
+}
