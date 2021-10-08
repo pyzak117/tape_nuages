@@ -4,83 +4,64 @@
 import os
 import json
 
-# Data-science libraries
-import numpy as  np
-np.seterr(divide='ignore', invalid='ignore')
-
-import bottleneck as bn
-from matplotlib import pyplot as plt
-
-# Geo libraries
-import gdal
-from PIL import Image as pillow_img
-
 # Image class
 from image import Image
 
-def cloudVerif(zone, imgPath, T1, t2):
-
-    # Importation des images
-    image = Image(imgPath, zone)
-
-    # Calcul ci1
-    ci1 = image.compute_ci1()
-    ci1Abs = abs(ci1-1)
-
-    # Calcul ci2
-    ci2 = image.compute_ci2()
-
-    # Classification ci1
-    vi1 = image.classif_ci1(ci1Abs, T1)
-
-    # Classification ci2
-    vi2 = image.classif_ci2(ci2, t2)
-
-    # Calcul de la fusion
-    fusion = image.fusionVisuals(vi1,vi2)
-
-    # Visualisation de la fusion
-    # image.array2png(fusion, 1, "fusion.png")
-
-    ratio = image.surface_nuage(fusion)
-
-    return ratio
-
-if __name__ == "__main__":
-
-    # Get configuration variables
-    with open("conf.json", "r") as fileConf:
+def main(fileConfPath = "conf.json"):
+    
+    # Récupération des paramètres contenus dans le fichier conf.json
+    with open(fileConfPath, "r") as fileConf:
         conf = json.load(fileConf)
 
-    # Unpack Conf
     xMin = conf["TOPLEFT"][0]
     yMax = conf["TOPLEFT"][1]    
     xMax = conf["BOTRIGHT"][0]
     yMin = conf["BOTRIGHT"][1]
-
-    zone = [xMin, xMax, yMin, yMax]
-
+    T1 = conf["T1"]
+    t2 = conf["t2"]
     seuilZone = conf["SEUIL_ZONE"]
     pathSerie = conf["PATH"]
     resultFile = conf["RESULT_FILE"]
 
-    T1 = conf["T1"]
-    t2 = conf["t2"]
+    results = {}
 
-    dic = {}
-    
-    # Création du fichier texte de résultats
-    with open(resultFile, "w") as rf:
-        rf.write("")
+    # Calcul du taux de couverture pour chaque image de la serie
+    for nomImage in os.listdir(pathSerie):
 
-    # Appel de la fonction de calcul sur toutes les images
-    for folder in os.listdir(pathSerie):
-        pathImage = os.path.join(pathSerie, folder)
-        dic[folder] = cloudVerif(zone, pathImage, T1, t2)
-        print(dic)
+        # Reconstitution du chemin de l'image
+        imgPath = os.path.join(pathSerie, nomImage)
 
-    # Ecriture des résultats dans le fichier texte créé précédemment
-    for ratio in dic:
-        if dic[ratio] > seuilZone:
-            with open(resultFile, "a") as rf:
-                rf.write(ratio + " = " + str(dic[ratio]))
+        # Importation des images
+        image = Image(imgPath, [xMin, xMax, yMin, yMax])
+
+        # Calcul des indices nuageux
+        ci1 = image.compute_ci1()
+        ci1Abs = abs(ci1-1)
+        ci2 = image.compute_ci2()
+
+        # Classification à partir des matrices d'indice et des seuils
+        vi1 = image.classifIndice(ci1Abs, 1, T1)
+        vi2 = image.classifIndice(ci2, 2, t2)
+
+        # Fusion des deux classifications
+        fusion = image.fusionClassifs(vi1,vi2)
+
+        # Visualisation de la fusion
+        image.matrice2png(fusion)
+
+        txCouv = image.surface_nuage(fusion)
+
+        # Ajout du resultat au dictionnaire de résultats
+        results[nomImage] = txCouv
+
+    # Ecriture d'un fichier texte à partir du dictionnaire résultats
+    for nomImage in results:
+        txCouv = results[nomImage]
+        # if txCouv < seuilZone:
+        with open(resultFile, "a") as rf:
+            rf.write(nomImage + " = " + str(txCouv) + "\n")
+
+    print(results)
+
+if __name__ == "__main__":
+    main()
