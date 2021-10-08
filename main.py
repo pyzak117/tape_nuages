@@ -46,8 +46,6 @@ def cloudVerif(zone, imgPath, T1, t2):
 
     return ratio
 
-# Boucle sur toutes les images présentes dans le dossier de la série temporelle
-
 if __name__ == "__main__":
 
     # Get configuration variables
@@ -71,7 +69,7 @@ if __name__ == "__main__":
 
     dic = {}
     
-    # Création du fichier de résultats
+    # Création du fichier texte de résultats
     with open(resultFile, "w") as rf:
         rf.write("")
 
@@ -81,7 +79,7 @@ if __name__ == "__main__":
         dic[folder] = cloudVerif(zone, pathImage, T1, t2)
         print(dic)
 
-    # Ecriture du fichier final avec les résultats
+    # Ecriture des résultats dans le fichier texte créé précédemment
     for ratio in dic:
         if dic[ratio] > seuilZone:
             with open(resultFile, "a") as rf:
