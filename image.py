@@ -27,14 +27,15 @@ class Image:
 
         print("Recherche et chargement des canaux")
 
+        # Parcours de tous les fichiers dans le dossier de l'image
         for fichier in os.listdir(imgPath):
             print(fichier)
             
             # Si c'est une image .tif
             if fichier.upper().endswith(".TIF"):
 
-                # Recherche du numéro de la bande dans le nom de l'image
                 try:
+                    # Recherche du numéro de la bande dans le nom de l'image
                     motif = re.compile("B[0-9]+.TIF$")
                     pos = re.search(motif, fichier.upper()).span()[0]
 
@@ -88,89 +89,45 @@ class Image:
     def compute_ci2(self):
         ci2 = (self.blue + self.green + self.red + self.nir + self.swir1 + self.swir2) / 6
         return ci2
-    
-    def classif_ci1(self, matrice, T1 = 0.1):
 
-        # Classification suspects / non suspects
+    def classifIndice(self, matriceIndice, mode, T1 = 0.1, t2 = 0.1):
+
+        if mode not in [1,2]:
+            raise ValueError("Mode inconnu")
+
+        if mode == 2:
+            # Définition du seuil T2
+            meanci2 = np.mean(matriceIndice[~np.isnan(matriceIndice)])
+            maxci2 = np.max(matriceIndice[~np.isnan(matriceIndice)])
+            T2 = meanci2 + (t2 * (maxci2 - meanci2))
+
+        # Classification pixels qui respectent la condition VS ceux qui ne la respectent pas
         suspects = []
-        for srcLine in matrice:
+
+        for srcLine in matriceIndice:
             trgtLine = []
 
             for pixel in srcLine:
-                if pixel < T1:
-                    trgtLine.append(255)
-                else:
-                    trgtLine.append(0)
+                if mode == 1:
+                    if pixel < T1:
+                        trgtLine.append(255)
+
+                    else:
+                        trgtLine.append(0)
+
+                elif mode == 2:
+                    if pixel > T2:
+                        trgtLine.append(255)
+
+                    else:
+                        trgtLine.append(0)
 
             suspects.append(trgtLine)
-
         npSuspects = np.array(suspects)
-
-        # Dialogue avec user pour savoir comment voir les résultats
-        show = input("     >>> Visuel prêt. Affichage ? (Y/N)\n     >>>")
-
-        if show.upper() == "Y":
-            pillow_img.fromarray(npSuspects).convert("L").show()
-        
-        save = input("     >>> Sauvegarde? (Y/N)\n     >>>")
-    
-        if save.upper() == "Y":
-
-            path = input("Emplacement:\n>>> ")
-            path += ".png"
-
-            try:
-                pillow_img.fromarray(npSuspects).convert("L").save(path)
-
-            except FileNotFoundError:
-                print("Repertoire non existant.")
-
-        return npSuspects
-
-    def classif_ci2(self, ci2, t2 = 0.1):
-
-        # Définition du seuil T2
-        meanci2 = np.mean(ci2[~np.isnan(ci2)])
-        maxci2 = np.max(ci2[~np.isnan(ci2)])
-        T2 = meanci2 + (t2 * (maxci2 - meanci2))
-
-        # Classification suspects / non suspects
-        suspects = []
-
-        for srcLine in ci2:
-            trgtLine = []
-
-            for pixel in srcLine:
-                if pixel > T2:
-                    trgtLine.append(255)
-                else:
-                    trgtLine.append(0)
-            
-            suspects.append(trgtLine)
-        npSuspects = np.array(suspects)
-
-        # Communication utilisateur
-        show = input("     >>> Visuel prêt. Affichage ? (Y/N)\n     >>>")
-
-        if show.upper() == "Y":
-            pillow_img.fromarray(npSuspects).convert("L").show()
-        
-        save = input("     >>> Sauvegarde? (Y/N)\n     >>>")
-        
-        if save.upper() == "Y":
-
-            path = input("Emplacement:\n>>> ")
-            path += ".png"
-
-            try:
-                pillow_img.fromarray(npSuspects).convert("L").save(path)
-
-            except ValueError:
-                print("Nom de fichier invalide.")
         
         return npSuspects
 
-    def fusionVisuals(self, visual1, visual2):
+    def fusionClassifs(self, visual1, visual2):
         return visual1 + visual2
 
         """
@@ -199,7 +156,11 @@ class Image:
         """
 
     def surface_nuage(self, matrice):
-        l_mask =[]
+
+        return (np.count_nonzero(matrice)/(np.shape(matrice)[0]*np.shape(matrice)[1]))*100
+
+        """
+        l_mask = []
         for line in matrice : 
             for pixel in line : 
                 if pixel >0:
@@ -208,15 +169,17 @@ class Image:
         surface = len(matrice) * len(matrice[0])
 
         return (nb_pixel_nuage / surface) * 100
+        """
 
-    def array2png(self, array, mode = 0, path = ""):
+    def matrice2png(self, matrice, mode = 0, path = ""):
         if mode == 0:
-            pillow_img.fromarray(array).convert("L").show()
+            pillow_img.fromarray(matrice).convert("L").show()
         
-        else:
+        elif mode == 1:
             print("Ecriture disque de la matrice de fusion")
             
             try:
-                pillow_img.fromarray(array).convert("L").save(path)
+                pillow_img.fromarray(matrice).convert("L").save(path)
+
             except ValueError:
                 print("Chemin d'enregistrement de l'image inconnu")
