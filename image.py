@@ -4,10 +4,8 @@
 import os
 import re
 
-# Datascience libraries
+# Third-party libraries
 import numpy as np
-
-# Geo libraries
 import gdal
 from PIL import Image as pillow_img
 
@@ -63,7 +61,7 @@ class Image:
                     row2=int((yMin-orY)/hauteurPixel)
                     col2=int((xMax-orX)/largeurPixel)
 
-                    # Transformation en matrice numpy sur la zone d'intérêt
+                    # Transformation en matrice numpy uniquement sur la zone d'intérêt
                     ar = ds.ReadAsArray(col1,row1,col2-col1+1,row2-row1+1).astype(np.float32)
 
                     # Stockage de l'array dans le dictionnaire bands
@@ -92,84 +90,33 @@ class Image:
 
     def classifIndice(self, matriceIndice, mode, T1 = 0.1, t2 = 0.1):
 
-        if mode not in [1,2]:
-            raise ValueError("Mode inconnu")
+        # Si on souhaite produire une classification basée sur une matrice de résultats de l'indice T1
+        if mode == 1:
+            classif = np.where(matriceIndice < T1, 255, 0)
 
-        if mode == 2:
-            # Définition du seuil T2
+        # Si on souhaite produire une classification basée sur une matrice de résultats de l'indice T2
+        elif mode == 2:
+
+            # Définition du seuil T2 en fonction du paramètre t2
             meanci2 = np.mean(matriceIndice[~np.isnan(matriceIndice)])
             maxci2 = np.max(matriceIndice[~np.isnan(matriceIndice)])
             T2 = meanci2 + (t2 * (maxci2 - meanci2))
 
-        # Classification pixels qui respectent la condition VS ceux qui ne la respectent pas
-        suspects = []
+            # Calcul de la classification
+            classif = np.where(matriceIndice > T2, 255, 0)
 
-        for srcLine in matriceIndice:
-            trgtLine = []
+            # Classification pixels qui respectent la condition VS ceux qui ne la respectent pas
 
-            for pixel in srcLine:
-                if mode == 1:
-                    if pixel < T1:
-                        trgtLine.append(255)
+        else:
+            raise ValueError("Mode inconnu")
 
-                    else:
-                        trgtLine.append(0)
-
-                elif mode == 2:
-                    if pixel > T2:
-                        trgtLine.append(255)
-
-                    else:
-                        trgtLine.append(0)
-
-            suspects.append(trgtLine)
-        npSuspects = np.array(suspects)
-        
-        return npSuspects
+        return classif
 
     def fusionClassifs(self, visual1, visual2):
         return visual1 + visual2
 
-        """
-        print("Construction de la matrice de visualisation de la fusion des deux indices")
-        sizeX = len(visual1)
-        sizeY = len(visual1[0])
-        fusion = []
-        curY = 0
-
-        for y in range(sizeY):
-            line = []
-            curX = 0
-
-            for x in range(sizeX):
-                if visual1[curY][curX] == 255 or visual2[curY][curX] == 255:
-                    line.append(255)
-                else:
-                    line.append(0)
-                curX += 1
-            
-            fusion.append(line)
-            curY += 1
-        
-        print("     >>> Terminé.")
-        return np.array(fusion)
-        """
-
     def surface_nuage(self, matrice):
-
         return (np.count_nonzero(matrice)/(np.shape(matrice)[0]*np.shape(matrice)[1]))*100
-
-        """
-        l_mask = []
-        for line in matrice : 
-            for pixel in line : 
-                if pixel >0:
-                    l_mask.append(pixel)
-        nb_pixel_nuage = len(l_mask)
-        surface = len(matrice) * len(matrice[0])
-
-        return (nb_pixel_nuage / surface) * 100
-        """
 
     def matrice2png(self, matrice, mode = 0, path = ""):
         if mode == 0:
