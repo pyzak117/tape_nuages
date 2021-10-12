@@ -11,8 +11,15 @@ from PIL import Image as pillow_img
 
 class Image:
     """
-    This class represent a satellite image. By default, a Landsat-8 self.
-    The __init__ function only need a path to the image folder, and it built numpy arrays for each band.
+    Cette classe représente une image satellite multispectrale. 
+    Pour le moment, seul les produits Landsat-8 sont pris en charge.
+
+    attributs
+    ---------
+        blue(ndarray) : contient les valeurs de la bande bleue de l'image
+        red(ndarray) : contient les valeurs de la bande rouge de l'image
+        ...
+
     """
 
     def __init__(self, imgPath, zone, sensor = "LS8"):
@@ -27,7 +34,6 @@ class Image:
 
         # Parcours de tous les fichiers dans le dossier de l'image
         for fichier in os.listdir(imgPath):
-            print(fichier)
             
             # Si c'est une image .tif
             if fichier.upper().endswith(".TIF"):
@@ -81,15 +87,21 @@ class Image:
             self.swir2 = bands["B7"]
 
     def compute_ci1(self):
+        """
+        Calcule l'indice nuageux ci1
+        """
         ci1 = (self.blue + self.green + self.red)/(self.nir + self.swir1*2)
         return ci1
 
     def compute_ci2(self):
+        """
+        Calcule l'indice nuageux ci2
+        """
         ci2 = (self.blue + self.green + self.red + self.nir + self.swir1 + self.swir2) / 6
         return ci2
 
     def classifIndice(self, matriceIndice, mode, T1 = 0.1, t2 = 0.1):
-
+        
         # Si on souhaite produire une classification basée sur une matrice de résultats de l'indice T1
         if mode == 1:
             classif = np.where(matriceIndice < T1, 255, 0)
