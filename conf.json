@@ -2,8 +2,8 @@
     "TOPLEFT":[171837, -1744039],
     "BOTRIGHT":[203073, -1765235],
     "SEUIL_ZONE":35,
-    "PATH":"C:/Users/22104926/Desktop/M2_TELENVI/INFORMATIQUE_IMAGE/projet_nuages/images_test/serie_temporelle_brasilia",
-    "RESULT_FILE":"C:/Users/22104926/Desktop/results.txt",
+    "PATH":"C:/maSerieDimages/",
+    "RESULT_FILE":"C:/monResultat.txt",
     "T1":0.1,
     "t2":0.1
     }
