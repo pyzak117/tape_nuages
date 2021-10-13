@@ -1,5 +1,13 @@
 # -*- coding: utf-8 -*-
 
+"""
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Auteurs : Pellen Julien, Duvanel Thibaut
+Base : https://doi.org/10.1016/j.isprsjprs.2018.07.006
+Date : Oct 2021
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+"""
+
 # Standard libraries
 import os
 import json
