@@ -176,11 +176,8 @@ class Image:
             maxci2 = np.max(matriceIndice[~np.isnan(matriceIndice)])
             T2 = meanci2 + (t2 * (maxci2 - meanci2))
 
-            # Calcul de la classification
+            # Classification
             classif = np.where(matriceIndice > T2, 255, 0)
-
-            # Classification pixels qui respectent la condition VS ceux qui ne la respectent pas
-
         else:
             raise ValueError("Mode inconnu")
 
@@ -196,10 +193,7 @@ class Image:
         """
         Calcule le pourcentage de valeurs différentes de 0 sur une matrice.
         """
-
-        surfaceMat = np.shape(matrice)[0]*np.shape(matrice)[1]
-        nbPixelsBlancs = np.count_nonzero(matrice)
-        return (nbPixelsBlancs/surfaceMat)*100
+        return (np.count_nonzero(matrice)/(np.shape(matrice)[0]*np.shape(matrice)[1]))*100
 
     def matrice2png(self, matrice, mode = 0, path = ""):
         """
@@ -229,3 +223,4 @@ class Image:
             print("Mode inconnu")
         
         return None
+
