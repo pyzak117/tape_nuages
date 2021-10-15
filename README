@@ -18,7 +18,7 @@ https://doi.org/10.1016/j.isprsjprs.2018.07.006
 MODE D'EMPLOI
 -------------
 
-1 - S'assurer de disposer des librairies suivantes avant d'éxecuter quoi que ce soit:
+1 - S'assurer de disposer des librairies suivantes avant d'éxecuter quoi que ce soit, ou créer un nouvel environnement et les installer:
 gdal, numpy, pillow, json, os, re
 
 2 - Renseigner les paramètres du fichier conf.json
