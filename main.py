@@ -65,9 +65,9 @@ def main(fileConfPath = "conf.json"):
     # Ecriture d'un fichier texte à partir du dictionnaire résultats
     for nomImage in results:
         txCouv = results[nomImage]
-        # if txCouv < seuilZone:
-        with open(resultFile, "a") as rf:
-            rf.write(nomImage + " = " + str(txCouv) + "\n")
+        if txCouv < seuilZone:
+            with open(resultFile, "a") as rf:
+                rf.write(nomImage + " = " + str(txCouv) + "\n")
 
     print(results)
 
