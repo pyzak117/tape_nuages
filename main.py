@@ -8,11 +8,11 @@ Date : Oct 2021
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
 
-# Standard libraries
+# Librairies standard
 import os
 import json
 
-# Image class
+# Classe Image
 from image import Image
 
 def main(fileConfPath = "conf.json"):
