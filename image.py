@@ -9,11 +9,11 @@ Date : Oct 2021
 
 """
 
-# Standard libraries
+# Librairies standard
 import os
 import re
 
-# Third-party libraries
+# Librairies tierces
 import numpy as np
 import gdal
 from PIL import Image as pillow_img
