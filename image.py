@@ -202,7 +202,11 @@ class Image:
             matrice (ndarray) : Matrice en entrée, nécéssité d'avoir la matrice définit par la méthode fusionVisual de la Classe Image
         
         """
-        return (np.count_nonzero(matrice)/(np.shape(matrice)[0]*np.shape(matrice)[1]))*100
+        return (np.count_nonzero(matrice)/(np.shape(matrice)[0]*np.shape(matrice)[1]))*100 # np.count_nonzero() nous retourne un int indiquant 
+                                                                                            # le nombre de valeur différentde zéro
+                                                                                            # l'expression: np.shape(matrice)[0]*np.shape(matrice)[1] in dique la superficie de la matrice
+                                                                                            # np.shape() renvoie un liste ayant comme contenue les dimension (X,Y) de notre matrice
+                                                    
 
     def matrice2png(self, matrice, mode = 0, path = ""):
         """
