@@ -159,6 +159,8 @@ class Image:
         ----------
             matriceIndice(ndarray) : matrice à classifier
             mode(int) : Modifie le comportement de la fonction selon la classif à réaliser
+                        Modalité : mode = 1 =====> Classification CI1
+                                   mode = 2 =====> Classification CI2
         
         returns
         -------
