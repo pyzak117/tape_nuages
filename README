@@ -45,4 +45,4 @@ gdal, numpy, pillow, json, os, re
 3 - Executer le fichier main.py
       Les classifications produites pour chaque image de la série vont s'afficher une à une
       pour que l'utilisateur aie un retour visuel sur les résultats. 
-      Les résultats (taux de couverture nuageuse et nom des images inférieures au seuil) sont inscrits dans le fichier de résultats.
+      Le taux de couverture nuageuse et le nom des images inférieures au seuil sont inscrits dans le fichier de résultats.
