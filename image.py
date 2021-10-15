@@ -194,12 +194,12 @@ class Image:
         """
         description
         -----------
-            Calcule en pourcentage, la surface recouverte par la couverture nuageuse
+            Calcule en pourcentage
             Comptabilise les pixels ayant non nulle au sein de la matrice, diviser par la surface totale de la matrice.
         
         parameters
         ----------
-            matrice (ndarray) : Matrice en entrée, nécéssité d'avoir la matrice définit par la méthode fusionVisual de la Classe Image
+            matrice (ndarray) : Matrice 
         
         """
         return (np.count_nonzero(matrice)/(np.shape(matrice)[0]*np.shape(matrice)[1]))*100 # np.count_nonzero() nous retourne un int indiquant 
