@@ -57,7 +57,7 @@ def main(fileConfPath = "conf.json"):
         # Visualisation de la fusion
         image.matrice2png(fusion)
 
-        txCouv = image.surface_nuage(fusion)
+        txCouv = image.surfaceNonZero(fusion)
 
         # Ajout du resultat au dictionnaire de résultats
         results[nomImage] = txCouv
